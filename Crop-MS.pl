@@ -151,3 +151,28 @@ crop_soil_type(barley, [loam, clay_loam, sandy_loam]).
 crop_soil_type(oats, [loam, clay_loam, silt_loam]).
 crop_soil_type(sunflower, [loam, clay_loam, sandy_loam]).
 crop_soil_type(cotton, [loam, sandy_loam, alluvial]).
+
+% Rules
+
+% Rule to get the list of recommended fertilizers for a crop at a specific growth stage
+fertilizer_list_for_crop_growth_stage(Crop, GrowthStage, FertilizerList) :-
+    crop_fertilizer(Crop, AllFertilizers),
+    crop_growth_stage(Crop, AllGrowthStages),
+    nth0(Index, AllGrowthStages, GrowthStage),
+    nth0(Index, AllFertilizers, FertilizerList).
+
+% Rule to get the list of recommended fertilizers for a crop type, soil type, and growth stage
+fertilizer_list_for_crop_soil_growth_stage(Crop, Soil, GrowthStage, FertilizerList) :-
+    crop_soil_type(Crop, SuitableSoils),
+    (   member(Soil, SuitableSoils) ->
+        fertilizer_list_for_crop_growth_stage(Crop, GrowthStage, FertilizerList)
+    ;   write('This crop cannot grow in this soil type.'), nl, fail
+    ).
+
+% Rule to get the list of crops that can grow in a specific soil type
+crops_for_soil_type(Soil, Crops) :-
+    findall(Crop, (crop_soil_type(Crop, SuitableSoils), member(Soil, SuitableSoils)), Crops).
+
+% Rule to get the list of fertilizers a crop needs
+fertilizer_list_for_crop(Crop, FertilizerList) :-
+    crop_fertilizer(Crop, FertilizerList).
