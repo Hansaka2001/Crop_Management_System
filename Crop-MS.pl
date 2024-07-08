@@ -176,3 +176,89 @@ crops_for_soil_type(Soil, Crops) :-
 % Rule to get the list of fertilizers a crop needs
 fertilizer_list_for_crop(Crop, FertilizerList) :-
     crop_fertilizer(Crop, FertilizerList).
+
+% predicates
+
+% Interactive predicate to get fertilizer list for crop and growth stage
+get_fertilizer_list_for_crop_growth_stage :-
+    write('Enter the crop: '), read(Crop),
+    write('Enter the growth stage: '), read(GrowthStage),
+    (   fertilizer_list_for_crop_growth_stage(Crop, GrowthStage, FertilizerList) ->
+        format('Recommended fertilizers for ~w at ~w stage: ~w~n', [Crop, GrowthStage, FertilizerList])
+    ;   write('Invalid input or no data available.'), nl
+    ).
+
+% Interactive predicate to get fertilizer list for crop, soil, and growth stage
+get_fertilizer_list_for_crop_soil_growth_stage :-
+    write('Enter the crop: '), read(Crop),
+    write('Enter the soil type: '), read(Soil),
+    write('Enter the growth stage: '), read(GrowthStage),
+    (   fertilizer_list_for_crop_soil_growth_stage(Crop, Soil, GrowthStage, FertilizerList) ->
+        format('Recommended fertilizers for ~w in ~w soil at ~w stage: ~w~n', [Crop, Soil, GrowthStage, FertilizerList])
+    ;   write('Invalid input or no data available.'), nl
+    ).
+
+% Interactive predicate to get crops for soil type
+get_crops_for_soil_type :-
+    write('Enter the soil type: '), read(Soil),
+    (   crops_for_soil_type(Soil, Crops) ->
+format('Crops that can grow in ~w soil: ~w~n', [Soil, Crops])
+;   write('Invalid input or no data available.'), nl
+).
+
+% Interactive predicate to get the fertilizer list for a crop across all growth stages
+get_fertilizer_list_for_crop :-
+write('Enter the crop: '), read(Crop),
+(   fertilizer_list_for_crop(Crop, FertilizerList) ->
+    format('Recommended fertilizers for ~w across all growth stages: ~w~n', [Crop, FertilizerList])
+;   write('Invalid input or no data available.'), nl
+).
+
+% Helper predicate to display available crop types
+display_crop_types :-
+write('Available crop types: '), findall(Crop, crop_type(Crop), Crops), writeln(Crops).
+
+% Helper predicate to display available soil types
+display_soil_types :-
+write('Available soil types: '), findall(Soil, soil_type(Soil), Soils), writeln(Soils).
+
+% Helper predicate to display available fertilizers
+display_fertilizers :-
+write('Available fertilizers: '), findall(Fertilizer, fertilizer(Fertilizer), Fertilizers), writeln(Fertilizers).
+
+% Helper predicate to display growth stages for a specific crop
+display_growth_stages(Crop) :-
+(   crop_growth_stage(Crop, GrowthStages) ->
+    format('Growth stages for ~w: ~w~n', [Crop, GrowthStages])
+;   write('Invalid crop or no data available.'), nl
+).
+
+% Main interactive menu
+main_menu :-
+write('Select an option:'), nl,
+write('1. Display available crop types'), nl,
+write('2. Display available soil types'), nl,
+write('3. Display available fertilizers'), nl,
+write('4. Display growth stages for a crop'), nl,
+write('5. Get recommended fertilizers for a crop and growth stage'), nl,
+write('6. Get recommended fertilizers for a crop, soil type, and growth stage'), nl,
+write('7. Get crops that can grow in a specific soil type'), nl,
+write('8. Get recommended fertilizers for a crop across all growth stages'), nl,
+write('9. Exit'), nl,
+read(Choice),
+(   Choice = 1 -> display_crop_types, main_menu
+;   Choice = 2 -> display_soil_types, main_menu
+;   Choice = 3 -> display_fertilizers, main_menu
+;   Choice = 4 -> write('Enter the crop: '), read(Crop), display_growth_stages(Crop), main_menu
+;   Choice = 5 -> get_fertilizer_list_for_crop_growth_stage, main_menu
+;   Choice = 6 -> get_fertilizer_list_for_crop_soil_growth_stage, main_menu
+;   Choice = 7 -> get_crops_for_soil_type, main_menu
+;   Choice = 8 -> get_fertilizer_list_for_crop, main_menu
+;   Choice = 9 -> write('Exiting...'), nl
+;   write('Invalid choice, please try again.'), nl, main_menu
+).
+
+% Start the interactive menu
+start :-
+write('Welcome to the Crop Management System'), nl,
+main_menu.
